@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -12,9 +13,11 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Category $category, Request $request)
     {
-        //
+        $categories = $category->getResults($request->name);
+
+        return response()->json($categories);
     }
 
     /**
@@ -36,7 +39,12 @@ class CategoryController extends Controller
      */
     public function show($id)
     {
-        //
+        $category = Category::find($id);
+
+        if(!$category)
+            return response()->json('message', 'Não há registro');
+
+        return response()->json($category);
     }
 
     /**
