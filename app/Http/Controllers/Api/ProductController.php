@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreUpdatePeoduct;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -19,9 +20,9 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = $this->product->paginate();
+        $products = $this->product->getResults($request->all());
 
         return response()->json($products);
     }
@@ -32,9 +33,11 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreUpdatePeoduct $request)
     {
-        //
+        $product = $this->product->create($request->all());
+
+        return response()->json($product, 201);
     }
 
     /**
@@ -57,7 +60,12 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        if(!$product = $this->product->find($id) )
+            return response(['error' => 'Registro não encontrado'], 404);
+
+        $product->update($request->all());
+
+        return response()->json($product);
     }
 
     /**
